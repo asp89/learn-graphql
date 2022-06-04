@@ -10,11 +10,13 @@ app.use(morgan("tiny"));
 
 // SECTION: router middleware
 const schema = require("./schema/schema")
+const testSchema = require("./schema/types_schema")
 
 app.use(
   "/graphql",
   graphqlHTTP({
     graphiql: true,
+    // schema: testSchema
     schema
   })
 );
