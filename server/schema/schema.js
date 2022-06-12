@@ -27,14 +27,14 @@ const UserType = new GraphQLObjectType({
     posts: {
       type: new GraphQLList(PostType),
       resolve(parent, _) {
-        return Post.find({ userId: parent.id});
+        return Post.find({ userId: parent.id });
       },
     },
 
     hobbies: {
       type: new GraphQLList(HobbyType),
       resolve(parent, _) {
-        return Hobby.find({ userId: parent.id});
+        return Hobby.find({ userId: parent.id });
       },
     },
   }),
@@ -99,6 +99,50 @@ const Mutation = new GraphQLObjectType({
         return user.save();
       },
     },
+    updateUser: {
+      type: UserType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+        name: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+        age: {
+          type: GraphQLNonNull(GraphQLInt),
+        },
+        profession: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve(parent, args) {
+        return (updatedUser = User.findByIdAndUpdate(
+          args.id,
+          {
+            $set: {
+              name: args.name,
+              age: args.age,
+              profession: args.profession,
+            },
+          },
+          { new: true } //send back the updated objectType
+        ));
+      },
+    },
+    deleteUser: {
+      type: UserType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve(parent, args) {
+        const user = User.findByIdAndRemove(args.id).exec();
+        if (!user) throw new "Error"();
+
+        return user;
+      },
+    },
     createPost: {
       type: PostType,
       args: {
@@ -115,6 +159,42 @@ const Mutation = new GraphQLObjectType({
           userId: args.userId,
         });
         return post.save();
+      },
+    },
+    updatePost: {
+      type: PostType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+        comment: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve(parent, args) {
+        return (updatedPost = Post.findByIdAndUpdate(
+          args.id,
+          {
+            $set: {
+              comment: args.comment,
+            },
+          },
+          { new: true }
+        ));
+      },
+    },
+    deletePost: {
+      type: PostType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve(parent, args) {
+        const post = Post.findByIdAndRemove(args.id).exec();
+        if (!post) throw new "Error"();
+
+        return post;
       },
     },
     createHobby: {
@@ -139,6 +219,47 @@ const Mutation = new GraphQLObjectType({
         return hobby.save();
       },
     },
+    updateHobby: {
+      type: HobbyType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+        title: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+        description: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve(parent, args) {
+        return (updatedHobby = Hobby.findByIdAndUpdate(
+          args.id,
+          {
+            $set: {
+              title: args.title,
+              description: args.description,
+            },
+          },
+          { new: true }
+        ));
+      },
+    },
+    deleteHobby: {
+      type: PostType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve(parent, args) {
+        const hobby = Hobby.findByIdAndRemove(args.id).exec();
+        if (!hobby) throw new "Error"();
+
+        return hobby;
+      },
+    },
+
   },
 });
 // !SECTION
